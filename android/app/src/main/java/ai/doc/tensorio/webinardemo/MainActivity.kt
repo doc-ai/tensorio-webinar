@@ -14,6 +14,27 @@ import java.io.IOException
 
 class MainActivity : AppCompatActivity() {
 
+    /** CIFAR-10 Labels */
+
+    private val labels = arrayOf(
+            "airplane",
+            "automobile",
+            "bird",
+            "cat",
+            "deer",
+            "dog",
+            "frog",
+            "horse",
+            "ship",
+            "truck"
+    )
+
+    /** Tensor/IO takes int[] inputs in Java so we must wrap a single int index in an array */
+
+    private fun numericLabel(name: String): IntArray {
+        return intArrayOf(labels.indexOf(name))
+    }
+
     /** Create a model bundle from a file, copying the asset to models */
 
     @Throws(IOException::class, ModelBundle.ModelBundleException::class)
@@ -47,11 +68,11 @@ class MainActivity : AppCompatActivity() {
 
             val stream1 = applicationContext.assets.open("images/cifar-car.jpg")
             val bitmap1 = BitmapFactory.decodeStream(stream1)
-            val label1 = intArrayOf(0)
+            val label1 = numericLabel("automobile")
 
             val stream2 = applicationContext.assets.open("images/cifar-bird.jpg")
             val bitmap2 = BitmapFactory.decodeStream(stream2)
-            val label2 = intArrayOf(2)
+            val label2 = numericLabel("bird")
 
             // Prepare Batch
 
