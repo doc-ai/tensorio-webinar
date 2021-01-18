@@ -4,15 +4,87 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:layout_margin="10pt"
+    >
 
     <TextView
+        android:id="@+id/imagesLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
+        android:text="Training on the following images:"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <ImageView
+        android:id="@+id/image1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/imagesLabel"
+        android:src="@drawable/ic_launcher_foreground"
+        android:paddingTop="10pt"
+        android:paddingBottom="10pt"
+        />
+
+    <ImageView
+        android:id="@+id/image2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toRightOf="@id/image1"
+        app:layout_constraintTop_toTopOf="@id/image1"
+        android:src="@drawable/ic_launcher_foreground"
+        android:paddingTop="10pt"
+        android:paddingBottom="10pt"
+        android:paddingLeft="5pt"
+        />
+
+    <TextView
+        android:id="@+id/epochsLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Number of epochs:"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/image1" />
+
+    <EditText
+        android:id="@+id/epochsValue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="number"
+        app:layout_constraintTop_toBottomOf="@id/epochsLabel"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:text="4"
+        />
+
+    <TextView
+        android:id="@+id/lossesLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="10pt"
+        android:text="Loss:"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/epochsValue" />
+
+    <TextView
+        android:id="@+id/lossValues"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="[...]"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lossesLabel"
+        android:paddingTop="10pt"
+        />
+
+    <Button
+        android:id="@+id/trainButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="trainAndReport"
+        android:text="Train Model"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintRight_toRightOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

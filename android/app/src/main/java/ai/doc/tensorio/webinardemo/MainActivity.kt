@@ -8,6 +8,10 @@ import ai.doc.tensorio.core.utilities.AndroidAssets
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.widget.EditText
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import java.io.File
 import java.io.IOException
@@ -58,6 +62,47 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // Show Images
+
+        val imageView1 = findViewById<ImageView>(R.id.image1)
+        val imageView2 = findViewById<ImageView>(R.id.image2)
+
+        val stream1 = assets.open("images/cifar-bird.jpg")
+        val image1 = BitmapFactory.decodeStream(stream1)
+
+        val stream2 = assets.open("images/cifar-car.jpg")
+        val image2 = BitmapFactory.decodeStream(stream2)
+
+        imageView1.setImageBitmap(image1)
+        imageView2.setImageBitmap(image2)
+    }
+
+    /** Called by the Train button */
+
+    public fun trainAndReport(view: View) {
+        val epochs = findViewById<EditText>(R.id.epochsValue).text.toString().toInt()
+        val losses = train(epochs)
+
+        findViewById<TextView>(R.id.lossValues).text = losses.toString()
+            .replace("[", "")
+            .replace("]", "")
+            .replace(", ", ",\n")
+
+        Log.d("Tensor/IO Webinar Demo", "Losses: $losses")
+    }
+
+    /**
+     * This is what you're interested in.
+     *
+     * In real life you'd run this off the main thread. In this example the image assets have
+     * already been resized to 96x96 but that is not necessary. Tensor/IO will take care of resizing
+     * images and applying any other transformations you declare in the model.json file.
+     *
+     * */
+
+    private fun train(epochs: Int): List<Float> {
+        var losses = floatArrayOf().toMutableList()
+
         try {
             // Prepare Model
 
@@ -90,16 +135,11 @@ class MainActivity : AppCompatActivity() {
 
             // Train Model
 
-            val NUM_EPOCHS = 4
-            var losses = floatArrayOf().toMutableList()
-
-            for (epoch in 0 until NUM_EPOCHS) {
+            for (epoch in 0 until epochs) {
                 val output = model.trainOn(batch)
                 val loss = output.get("total_loss") as FloatArray
                 losses.add(loss[0])
             }
-
-            Log.d("Tensor/IO Webinar Demo", "Losses: $losses")
 
         } catch (e: ModelBundle.ModelBundleException) {
             print(e)
@@ -108,5 +148,7 @@ class MainActivity : AppCompatActivity() {
         } catch (e: IOException) {
             print(e)
         }
+
+        return losses
     }
 }
