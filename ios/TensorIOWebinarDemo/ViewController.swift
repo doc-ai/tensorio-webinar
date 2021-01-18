@@ -10,6 +10,11 @@ import TensorIO
 
 class ViewController: UIViewController {
 
+    @IBOutlet var imageView1: UIImageView!
+    @IBOutlet var imageView2: UIImageView!
+    @IBOutlet var epochTextField: UITextField!
+    @IBOutlet var lossesTextView: UITextView!
+    
     // Model Loading Utilities
     
     func bundle(named name: String) -> TIOModelBundle? {
@@ -56,7 +61,7 @@ class ViewController: UIViewController {
         return buffer
     }
     
-    // Labels
+    /// CIFAR-10 Labels
     
     let labels = [
         "airplane",
@@ -75,11 +80,54 @@ class ViewController: UIViewController {
         return labels.firstIndex(of: label)!
     }
     
-    // And Action!
+    /// API Overrides
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        // Done Button
+        
+        let bar = UIToolbar()
+        
+        bar.items = [
+            UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
+            UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(dismissEpochsKeyboard(sender:)))
+        ]
+        
+        bar.sizeToFit()
+        epochTextField.inputAccessoryView = bar
+        
+        // Image Preview
+        
+        imageView1.image = UIImage(contentsOfFile: Bundle.main.path(forResource: "cifar-car", ofType: "jpg", inDirectory: "images")!)
+        imageView2.image = UIImage(contentsOfFile: Bundle.main.path(forResource: "cifar-bird", ofType: "jpg", inDirectory: "images")!)
+    }
+    
+    @IBAction
+    func dismissEpochsKeyboard(sender: UIResponder) {
+        epochTextField.resignFirstResponder()
+    }
+    
+    @IBAction
+    func trainAndReport(sender: UIResponder) {
+        let epochs = Int(epochTextField.text!)!
+        let losses = train(epochs: epochs)
+        
+        lossesTextView.text = losses.description
+            .replacingOccurrences(of: "[", with: "")
+            .replacingOccurrences(of: "]", with: "")
+            .replacingOccurrences(of: ", ", with: "\n")
+        
+        print("Losses: \(losses)")
+    }
+    
+    /// This is what you're interested in.
+    ///
+    /// In real life you'd run this off the main thread. In this example the image assets have
+    /// already been resized to 96x96 but that is not necessary. Tensor/IO will take care of resizing
+    /// images and applying any other transformations you declare in the model.json file.
+    
+    private func train(epochs: Int) -> [Float] {
         // Load the model
                 
         let bundle = self.bundle(named: "keras-cifar10-mobilenet-estimator-train")!
@@ -110,10 +158,9 @@ class ViewController: UIViewController {
         
         // Train
         
-        let NUM_EPOCHS = 4
         var losses: [Float] = []
                 
-        for /*epoch*/ _ in 0..<NUM_EPOCHS {
+        for /*epoch*/ _ in 0..<epochs {
             var error: NSError?
             let output = model.train(batch, error: &error)
             let loss = (output as! NSDictionary)["total_loss"] as! Float
@@ -121,7 +168,7 @@ class ViewController: UIViewController {
             losses.append(loss)
         }
         
-        print("Losses: \(losses)")
+        return losses
     }
     
 }
